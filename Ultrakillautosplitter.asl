@@ -1,9 +1,11 @@
 //Credits Mysterion_06_
 //TheSast, Shoen and YellowSwerve testing
 
+//Patched on 24/04/2021 by EvanMad (Refound IGT Pointer)
+
 state("ULTRAKILL"){
     string256 level: "tier0_s64.dll", 0x000589D0, 0x18;
-    float IGT: "UnityPlayer.dll", 0x017CA358, 0xA0, 0x78, 0x28, 0x130, 0x38, 0xC8;
+    float IGT: "UnityPlayer.dll", 0x0181AB78, 0xA0, 0x78, 0x0, 0xD0, 0x20, 0x38, 0xC8;
 }
 
 init{
