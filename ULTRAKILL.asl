@@ -59,7 +59,7 @@ init
         vars.Helper["Seconds"] = sm.Make<float>("instance", "seconds");
         vars.Helper["TimerRunning"] = sm.Make<bool>("instance", "timer");
         vars.Helper["LevelInProgress"] = sm.Make<bool>("instance", "timerOnOnce");
-		vars.Helper["LevelEnd"] = sm.Make<bool>("instance", "infoSent");
+	vars.Helper["LevelEnd"] = sm.Make<bool>("instance", "infoSent");
 
         return true;
     });
