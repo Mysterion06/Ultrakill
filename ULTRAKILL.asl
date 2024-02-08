@@ -43,11 +43,6 @@ onStart
     }
 }
 
-onSplit
-{
-    vars.SplitForLevelEnd = false;
-}
-
 init
 {
     vars.TotalGameTime = 0d;
