@@ -25,7 +25,6 @@ startup
 onStart
 {
     vars.TotalGameTime = 0d;
-    vars.SplitForLevelEnd = false;
 
     vars.LevelKills.Clear();
     for (int i = 0; i < timer.Run.Count; i++)
@@ -44,16 +43,10 @@ onStart
     }
 }
 
-onSplit
-{
-    vars.SplitForLevelEnd = false;
-}
-
 init
 {
     vars.TotalGameTime = 0d;
 
-    vars.SplitForLevelEnd = false;
     vars.WaitForGameTime = false;
 
     vars.Helper.TryLoad = (Func<dynamic, bool>)(mono =>
@@ -66,6 +59,7 @@ init
         vars.Helper["Seconds"] = sm.Make<float>("instance", "seconds");
         vars.Helper["TimerRunning"] = sm.Make<bool>("instance", "timer");
         vars.Helper["LevelInProgress"] = sm.Make<bool>("instance", "timerOnOnce");
+	vars.Helper["LevelEnd"] = sm.Make<bool>("instance", "infoSent");
 
         return true;
     });
@@ -87,9 +81,6 @@ start
 
 split
 {
-    if (!current.LevelInProgress)
-        return;
-
     if (settings["ilMode"])
     {
         int kills;
@@ -100,7 +91,7 @@ split
         }
     }
 
-    return vars.SplitForLevelEnd
+    return (current.LevelEnd && !old.LevelEnd)
         || settings["cpSplits"] && old.Checkpoint != current.Checkpoint && current.Checkpoint != IntPtr.Zero;
 }
 
@@ -112,10 +103,8 @@ reset
 
 gameTime
 {
-    if (old.TimerRunning && !current.TimerRunning)
-    {
-        vars.TotalGameTime += current.Seconds;
-        vars.SplitForLevelEnd = true;
+    if (current.Seconds < old.Seconds){
+        vars.TotalGameTime += old.Seconds;
     }
 
     if (current.TimerRunning)
