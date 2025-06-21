@@ -46,6 +46,8 @@ onStart
 init
 {
     vars.TotalGameTime = 0d;
+    
+    vars.DoSplit = false;
 
     vars.WaitForGameTime = false;
 
@@ -81,34 +83,54 @@ start
 
 split
 {
-    if (settings["ilMode"])
+    if (vars.DoSplit)
     {
-        int kills;
-        if (vars.LevelKills.TryGetValue(timer.CurrentSplitIndex, out kills)
-            && current.Kills >= kills)
-        {
-            return true;
-        }
+        vars.DoSplit = false;
+        return true;
     }
 
-    return (current.LevelEnd && !old.LevelEnd)
-        || settings["cpSplits"] && old.Checkpoint != current.Checkpoint && current.Checkpoint != IntPtr.Zero;
+    int kills;
+    if (settings["ilMode"]
+        && vars.LevelKills.TryGetValue(timer.CurrentSplitIndex, out kills)
+        && current.Kills >= kills)
+    {
+        vars.DoSplit = true;
+        return false;
+    }
+
+    if (settings["cpSplits"] 
+        && old.Checkpoint != current.Checkpoint 
+        && current.Checkpoint != IntPtr.Zero)
+    {
+        vars.DoSplit = true;
+        return false;
+    }
+
+    if (current.LevelEnd && !old.LevelEnd)
+    {
+        vars.DoSplit = true;
+        return false;
+    }
 }
 
 reset
 {
-    return old.LevelInProgress && !current.LevelInProgress
+    return old.LevelInProgress 
+        && !current.LevelInProgress
         && (settings["ilMode"] || timer.CurrentSplitIndex == 0);
 }
 
 gameTime
 {
-    if (current.Seconds < old.Seconds){
-        vars.TotalGameTime += old.Seconds;
+    if (current.Seconds < old.Seconds)
+    {
+        vars.TotalGameTime += float.Parse(old.Seconds.ToString("0.000"));
     }
 
     if (current.TimerRunning)
-        return TimeSpan.FromSeconds(vars.TotalGameTime + current.Seconds);
+    {
+        return TimeSpan.FromSeconds(vars.TotalGameTime + float.Parse(current.Seconds.ToString("0.000")));
+    }
 }
 
 isLoading
